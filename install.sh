@@ -1,7 +1,10 @@
 #!/bin/bash
 
-cd /tmp
 git clone https://github.com/ondasd/disko-setup
+git clone https://github.com/ondasd/config
+git clone https://github.com/timo-reymann/bash-tui-toolkit
+source ./install.bash
+cd /tmp
 lsblk
 echo "================================="
 echo "choose your disk.default=/dev/sda"
@@ -13,11 +16,12 @@ case $answer in
     yes|y|Y|YES)
         nano /tmp/disko-setup/disko-conf.nix
         ;;
-    no|n|N|NO
+    no|n|N|NO)
         echo "ok"
         ;;
     *)
         echo "wrong answer"
+        ;;
 esac
 touch Disko.nix
 cd disko-setup
@@ -25,11 +29,27 @@ cp disko-conf.nix /tmp/Disko.nix
 cd ..
 nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount /tmp/Disko.nix
 lsblk
+echo "work?"
+echo "yes/no"
+read otvet
+case $otvet in
+    yes|y|Y|YES)
+        echo "good"
+        ;;
+    n|n|N|NO)
+        nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount /tmp/Disko.nix
+        ;;
+    *)
+        echo "don't understand"
+        ;;
+esac
+lsblk
 mkdir -p /mnt/etc/nixos
 cp /tmp/Disko.nix /mnt/etc/nixos/disko.nix
 cd /mnt/etc/nixos
 nixos-generate-config --no-filesystems --root /mnt
-sed -i '10a "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/master.tar.gz"}/module.nix"' configuration.nix
-sed -i '14 s/.*/boot.loader.limine.enable = true;' configuration.nix
-sed -i '15d' configuration.nix
+cp  ~/config/c.nix /mnt/etc/nixos/configuration.nix
 nixos-install
+cd ~
+rm -rf config
+rm -rf disko-setup
