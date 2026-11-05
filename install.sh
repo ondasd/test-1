@@ -1,5 +1,7 @@
+#!/bin/bash
 #!/bin/sh
 
+cd ..
 git clone https://github.com/ondasd/disko-setup
 git clone https://github.com/ondasd/config
 cd /tmp
