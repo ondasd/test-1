@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 git clone https://github.com/ondasd/disko-setup
 git clone https://github.com/ondasd/config
-git clone https://github.com/timo-reymann/bash-tui-toolkit
-source ./install.bash
 cd /tmp
 lsblk
 echo "================================="
